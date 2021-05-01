@@ -55,6 +55,108 @@ func (bc BookController) GetBookByID(c *gin.Context) {
 	c.JSON(http.StatusOK, book)
 }
 
+func (bc BookController) GetBookByCategory(c *gin.Context) {
+	log.Println("[Book: GetBookByCategory]")
+	bookModel := model.BookModel{}
+
+	var request form.Book
+	err := c.BindJSON(&request)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Error while binding to model.",
+		})
+		return
+	}
+
+	books, err := bookModel.ReadByCategoryName(request.Category)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Error while getting books",
+		})
+		return
+	}
+	if len(books) == 0 {
+		log.Println("No book found.")
+		c.JSON(http.StatusNotFound, gin.H{
+			"message": "No book Found.",
+		})
+		return
+	}
+
+	log.Println("Get book successfully")
+	c.JSON(http.StatusOK, books)
+}
+
+func (bc BookController) GetBookByAuthor(c *gin.Context) {
+	log.Println("[Book: GetBookByAuthor]")
+	bookModel := model.BookModel{}
+
+	var request form.Book
+	err := c.BindJSON(&request)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Error while binding to model.",
+		})
+		return
+	}
+
+	books, err := bookModel.ReadByAuthorName(request.Author)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Error while getting books",
+		})
+		return
+	}
+	if len(books) == 0 {
+		log.Println("No book found.")
+		c.JSON(http.StatusNotFound, gin.H{
+			"message": "No book Found.",
+		})
+		return
+	}
+
+	log.Println("Get book successfully")
+	c.JSON(http.StatusOK, books)
+}
+
+func (bc BookController) GetBookByPublisher(c *gin.Context) {
+	log.Println("[Book: GetBookByPublisher]")
+	bookModel := model.BookModel{}
+
+	var request form.Book
+	err := c.BindJSON(&request)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Error while binding to model.",
+		})
+		return
+	}
+
+	books, err := bookModel.ReadByPublisherName(request.Publisher)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Error while getting books",
+		})
+		return
+	}
+	if len(books) == 0 {
+		log.Println("No book found.")
+		c.JSON(http.StatusNotFound, gin.H{
+			"message": "No book Found.",
+		})
+		return
+	}
+
+	log.Println("Get book successfully")
+	c.JSON(http.StatusOK, books)
+}
+
 func (bc BookController) InsertBook(c *gin.Context) {
 	log.Println("[Book: InsertBook]")
 	bookModel := model.BookModel{}

@@ -6,7 +6,7 @@ type UserInfo struct {
 	Email     string `json:"email"`
 	Address   string `json:"address"`
 	Telephone string `json:"telephone"`
-	UserName  string `json:"username"`
+	Username  string `json:"username"`
 	Password  string `json:"password"`
 }
 
@@ -15,6 +15,11 @@ type UserInfoRequest struct {
 	Email     string `json:"email"`
 	Address   string `json:"address"`
 	Telephone string `json:"telephone"`
-	UserName  string `json:"username"`
+	Username  string `json:"username"`
 	Password  string `json:"password"`
+}
+
+type UserLoginRequest struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }

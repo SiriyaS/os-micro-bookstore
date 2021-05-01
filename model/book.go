@@ -52,6 +52,78 @@ func (bm BookModel) ReadByID(isbn string) (form.Book, error) {
 	return book, nil
 }
 
+func (bm BookModel) ReadByCategoryName(category string) ([]form.Book, error) {
+	// connect to database
+	conn, err := database.NewConnection()
+	if err != nil {
+		return nil, err
+	}
+	defer database.CloseConnection(conn)
+
+	var books []form.Book
+	subQuery := conn.Table("category c").Select("id").Where("c.name = ?", category)
+	if err = conn.
+		Table("books b").
+		Select("b.ISBN, b.name, a.name AS author, b.unit_price, b.publish_year, p.name AS publisher, edition, c.name AS category").
+		Joins("INNER JOIN authors a ON b.author = a.id").
+		Joins("INNER JOIN publishers p ON b.publisher = p.id").
+		Joins("INNER JOIN category c ON b.category = c.id ").
+		Where("b.category = (?)", subQuery).
+		Find(&books).Error; err != nil {
+		return nil, err
+	}
+
+	return books, nil
+}
+
+func (bm BookModel) ReadByAuthorName(author string) ([]form.Book, error) {
+	// connect to database
+	conn, err := database.NewConnection()
+	if err != nil {
+		return nil, err
+	}
+	defer database.CloseConnection(conn)
+
+	var books []form.Book
+	subQuery := conn.Table("authors a").Select("id").Where("a.name LIKE ?", "%"+author+"%")
+	if err = conn.
+		Table("books b").
+		Select("b.ISBN, b.name, a.name AS author, b.unit_price, b.publish_year, p.name AS publisher, edition, c.name AS category").
+		Joins("INNER JOIN authors a ON b.author = a.id").
+		Joins("INNER JOIN publishers p ON b.publisher = p.id").
+		Joins("INNER JOIN category c ON b.category = c.id ").
+		Where("b.author = (?)", subQuery).
+		Find(&books).Error; err != nil {
+		return nil, err
+	}
+
+	return books, nil
+}
+
+func (bm BookModel) ReadByPublisherName(publisher string) ([]form.Book, error) {
+	// connect to database
+	conn, err := database.NewConnection()
+	if err != nil {
+		return nil, err
+	}
+	defer database.CloseConnection(conn)
+
+	var books []form.Book
+	subQuery := conn.Table("publishers p").Select("id").Where("p.name LIKE ?", "%"+publisher+"%")
+	if err = conn.
+		Table("books b").
+		Select("b.ISBN, b.name, a.name AS author, b.unit_price, b.publish_year, p.name AS publisher, edition, c.name AS category").
+		Joins("INNER JOIN authors a ON b.author = a.id").
+		Joins("INNER JOIN publishers p ON b.publisher = p.id").
+		Joins("INNER JOIN category c ON b.category = c.id ").
+		Where("b.publisher = (?)", subQuery).
+		Find(&books).Error; err != nil {
+		return nil, err
+	}
+
+	return books, nil
+}
+
 func (bm BookModel) Add(book form.BookRequest) (err error) {
 	// connect to database
 	conn, err := database.NewConnection()

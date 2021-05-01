@@ -15,3 +15,7 @@
 # vendor/
 
 development.yaml
+
+.idea/
+
+Script-4.sql

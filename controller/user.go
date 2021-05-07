@@ -92,8 +92,8 @@ func (uc UserController) Login(c *gin.Context) {
 	})
 }
 
-func (uc UserController) EditProfile(c *gin.Context) {
-	log.Println("[User: EditProfile]")
+func (uc UserController) EditProfileByEmail(c *gin.Context) {
+	log.Println("[User: EditProfileByEmail]")
 
 	userModel := model.UserModel{}
 

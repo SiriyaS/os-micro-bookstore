@@ -33,7 +33,7 @@ func (bc BookController) GetBookByID(c *gin.Context) {
 	log.Println("[Book: GetBookByID]")
 	bookModel := model.BookModel{}
 
-	bookISBN := c.Query("book_isbn")
+	bookISBN := c.Query("isbn")
 
 	book, err := bookModel.ReadByID(bookISBN)
 	if err != nil {
@@ -59,17 +59,9 @@ func (bc BookController) GetBookByCategory(c *gin.Context) {
 	log.Println("[Book: GetBookByCategory]")
 	bookModel := model.BookModel{}
 
-	var request form.Book
-	err := c.BindJSON(&request)
-	if err != nil {
-		log.Println(err)
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Error while binding to model.",
-		})
-		return
-	}
+	bookCategory := c.Query("category")
 
-	books, err := bookModel.ReadByCategoryName(request.Category)
+	books, err := bookModel.ReadByCategoryName(bookCategory)
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -93,17 +85,9 @@ func (bc BookController) GetBookByAuthor(c *gin.Context) {
 	log.Println("[Book: GetBookByAuthor]")
 	bookModel := model.BookModel{}
 
-	var request form.Book
-	err := c.BindJSON(&request)
-	if err != nil {
-		log.Println(err)
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Error while binding to model.",
-		})
-		return
-	}
+	bookAuthor := c.Query("author")
 
-	books, err := bookModel.ReadByAuthorName(request.Author)
+	books, err := bookModel.ReadByAuthorName(bookAuthor)
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -127,17 +111,9 @@ func (bc BookController) GetBookByPublisher(c *gin.Context) {
 	log.Println("[Book: GetBookByPublisher]")
 	bookModel := model.BookModel{}
 
-	var request form.Book
-	err := c.BindJSON(&request)
-	if err != nil {
-		log.Println(err)
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Error while binding to model.",
-		})
-		return
-	}
+	bookPublisher := c.Query("publisher")
 
-	books, err := bookModel.ReadByPublisherName(request.Publisher)
+	books, err := bookModel.ReadByPublisherName(bookPublisher)
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{

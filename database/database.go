@@ -13,7 +13,7 @@ var dbAddress string
 
 func Init() {
 	conf := config.GetConfig()
-	dbAddress = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s",
+	dbAddress = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true",
 		conf.GetString("database.user"),
 		conf.GetString("database.password"),
 		conf.GetString("database.host"),
@@ -23,7 +23,6 @@ func Init() {
 
 func NewConnection() (*gorm.DB, error) {
 	// connect to database
-	// conn, err := sql.Open("mysql", dbAddress)
 	conn, err := gorm.Open(mysql.Open(dbAddress), &gorm.Config{})
 	if err != nil {
 		return nil, err

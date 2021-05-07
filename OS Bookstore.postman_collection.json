@@ -1,0 +1,363 @@
+{
+	"info": {
+		"_postman_id": "65ca14dc-5215-4490-816d-0aaa0806d636",
+		"name": "OS Bookstore",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "localhost:4000/ping",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:4000/ping",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"ping"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:4000/books",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:4000/books",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"books"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:4000/book?isbn=9789811125837",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:4000/book?isbn=9789811125837",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"book"
+					],
+					"query": [
+						{
+							"key": "isbn",
+							"value": "9789811125837"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:4000/book/category?category=Thriller",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:4000/book/category?category=Thriller",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"book",
+						"category"
+					],
+					"query": [
+						{
+							"key": "category",
+							"value": "Thriller"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:4000/book/author?author=Aoyama",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:4000/book/author?author=Aoyama",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"book",
+						"author"
+					],
+					"query": [
+						{
+							"key": "author",
+							"value": "Aoyama"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:4000/book/publisher?publisher=Shogakukan",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:4000/book/publisher?publisher=Shogakukan",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"book",
+						"publisher"
+					],
+					"query": [
+						{
+							"key": "publisher",
+							"value": "Shogakukan"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:4000/book/add",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"isbn\": \"9789811125840\",\n    \"name\": \"Detective Conan: Shuichi Akai Special Collection 5\",\n    \"author\": 1,\n    \"unit_price\": 290,\n    \"publish_year\": 2019,\n    \"publisher\": 1,\n    \"edition\": 1,\n    \"category\": 8\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:4000/book/add",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"book",
+						"add"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:4000/book/update?book_isbn=9789811125837",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"publish_year\": 2028,\n    \"category\": 1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:4000/book/update?book_isbn=9789811125837",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"book",
+						"update"
+					],
+					"query": [
+						{
+							"key": "book_isbn",
+							"value": "9789811125837"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:4000/book/delete?book_isbn=9789811125837",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "localhost:4000/book/delete?book_isbn=9789811125840",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"book",
+						"delete"
+					],
+					"query": [
+						{
+							"key": "book_isbn",
+							"value": "9789811125840"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:4000/getOrder?order_no=ORDER52235",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:4000/getOrder?order_no=ORDER52235",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"getOrder"
+					],
+					"query": [
+						{
+							"key": "order_no",
+							"value": "ORDER52235"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:4000/makeOrder",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"header\": {\n        \"user\": 1\n    },\n    \"details\": [\n        {\n            \"order_seq\": 1,\n            \"book_isbn\": \"9789811125836\",\n            \"quantity\": 1,\n            \"unit_price\": 260\n        },\n        {\n            \"order_seq\": 2,\n            \"book_isbn\": \"9789811125839\",\n            \"quantity\": 3,\n            \"unit_price\": 299\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:4000/makeOrder",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"makeOrder"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:4000/register",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Pong\",\n    \"email\": \"pong@gmail.com\",\n    \"address\": \"Bangkok\",\n    \"telephone\": \"111-2222\",\n    \"username\": \"pong15\",\n    \"password\": \"abcd\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:4000/register",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:4000/login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"ping@gmail.com\",\n    \"password\": \"1234\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:4000/login",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:4000/editProfile",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"ping@gmail.com\",\n    \"telephone\": \"123-4568\",\n    \"username\": \"ping96\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:4000/editProfile",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"editProfile"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

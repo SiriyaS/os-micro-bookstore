@@ -18,7 +18,7 @@ func (bm BookModel) ReadAll() ([]form.Book, error) {
 	var books []form.Book
 	if err = conn.
 		Table("books b").
-		Select("b.ISBN, b.name, a.name AS author, b.unit_price, b.publish_year, p.name AS publisher, edition, c.name AS category").
+		Select("b.ISBN, b.name, b.image_url, a.name AS author, b.unit_price, b.publish_year, p.name AS publisher, edition, c.name AS category").
 		Joins("INNER JOIN authors a ON b.author = a.id").
 		Joins("INNER JOIN publishers p ON b.publisher = p.id").
 		Joins("INNER JOIN category c ON b.category = c.id ").
@@ -40,7 +40,7 @@ func (bm BookModel) ReadByID(isbn string) (form.Book, error) {
 	var book form.Book
 	if err = conn.
 		Table("books b").
-		Select("b.ISBN, b.name, a.name AS author, b.unit_price, b.publish_year, p.name AS publisher, edition, c.name AS category").
+		Select("b.ISBN, b.name, b.image_url, a.name AS author, b.unit_price, b.publish_year, p.name AS publisher, edition, c.name AS category").
 		Joins("INNER JOIN authors a ON b.author = a.id").
 		Joins("INNER JOIN publishers p ON b.publisher = p.id").
 		Joins("INNER JOIN category c ON b.category = c.id ").
@@ -64,7 +64,7 @@ func (bm BookModel) ReadByCategoryName(category string) ([]form.Book, error) {
 	subQuery := conn.Table("category c").Select("id").Where("c.name = ?", category)
 	if err = conn.
 		Table("books b").
-		Select("b.ISBN, b.name, a.name AS author, b.unit_price, b.publish_year, p.name AS publisher, edition, c.name AS category").
+		Select("b.ISBN, b.name, b.image_url, a.name AS author, b.unit_price, b.publish_year, p.name AS publisher, edition, c.name AS category").
 		Joins("INNER JOIN authors a ON b.author = a.id").
 		Joins("INNER JOIN publishers p ON b.publisher = p.id").
 		Joins("INNER JOIN category c ON b.category = c.id ").
@@ -88,7 +88,7 @@ func (bm BookModel) ReadByAuthorName(author string) ([]form.Book, error) {
 	subQuery := conn.Table("authors a").Select("id").Where("a.name LIKE ?", "%"+author+"%")
 	if err = conn.
 		Table("books b").
-		Select("b.ISBN, b.name, a.name AS author, b.unit_price, b.publish_year, p.name AS publisher, edition, c.name AS category").
+		Select("b.ISBN, b.name, b.image_url, a.name AS author, b.unit_price, b.publish_year, p.name AS publisher, edition, c.name AS category").
 		Joins("INNER JOIN authors a ON b.author = a.id").
 		Joins("INNER JOIN publishers p ON b.publisher = p.id").
 		Joins("INNER JOIN category c ON b.category = c.id ").
@@ -112,7 +112,7 @@ func (bm BookModel) ReadByPublisherName(publisher string) ([]form.Book, error) {
 	subQuery := conn.Table("publishers p").Select("id").Where("p.name LIKE ?", "%"+publisher+"%")
 	if err = conn.
 		Table("books b").
-		Select("b.ISBN, b.name, a.name AS author, b.unit_price, b.publish_year, p.name AS publisher, edition, c.name AS category").
+		Select("b.ISBN, b.name, b.image_url, a.name AS author, b.unit_price, b.publish_year, p.name AS publisher, edition, c.name AS category").
 		Joins("INNER JOIN authors a ON b.author = a.id").
 		Joins("INNER JOIN publishers p ON b.publisher = p.id").
 		Joins("INNER JOIN category c ON b.category = c.id ").
@@ -205,11 +205,11 @@ func (bm BookModel) UpdateByID(isbn string, book form.BookRequest) (err error) {
 			return
 		}
 	}
-	if book.Image_URL != "" {
+	if book.ImageURL != "" {
 		if err = conn.
 			Table("books").
 			Where("isbn = ?", isbn).
-			Update("image_url", book.Image_URL).Error; err != nil {
+			Update("image_url", book.ImageURL).Error; err != nil {
 			return
 		}
 	}

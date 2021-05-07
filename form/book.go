@@ -10,23 +10,23 @@ type Product struct {
 type Book struct {
 	ISBN        string  `json:"isbn"`
 	Name        string  `json:"name"`
+	ImageURL    string  `json:"image_url"`
 	Author      string  `json:"author"`
 	UnitPrice   float64 `json:"unit_price"`
 	PublishYear uint64  `json:"publish_year"`
 	Publisher   string  `json:"publisher"`
 	Edition     uint64  `json:"edition"`
 	Category    string  `json:"category"`
-	Image_URL   string  `json:"image_url"`
 }
 
 type BookRequest struct {
 	ISBN        string  `json:"isbn"`
 	Name        string  `json:"name"`
+	ImageURL    string  `json:"image_url"`
 	Author      uint64  `json:"author"`
 	UnitPrice   float64 `json:"unit_price"`
 	PublishYear uint64  `json:"publish_year"`
 	Publisher   uint64  `json:"publisher"`
 	Edition     uint64  `json:"edition"`
 	Category    uint64  `json:"category"`
-	Image_URL   string  `json:"image_url"`
 }

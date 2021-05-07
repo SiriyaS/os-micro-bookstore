@@ -12,6 +12,7 @@ type OrderHeader struct {
 	User       uint64    `json:"user"`
 	OrderDate  time.Time `json:"order_date"`
 	GrandTotal float64   `json:"grand_total"`
+	Address    string    `json:"address"`
 }
 
 type OrderDetail struct {

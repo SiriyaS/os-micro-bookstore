@@ -16,6 +16,7 @@ type Book struct {
 	Publisher   string  `json:"publisher"`
 	Edition     uint64  `json:"edition"`
 	Category    string  `json:"category"`
+	Image_URL   string  `json:"image_url"`
 }
 
 type BookRequest struct {
@@ -27,4 +28,5 @@ type BookRequest struct {
 	Publisher   uint64  `json:"publisher"`
 	Edition     uint64  `json:"edition"`
 	Category    uint64  `json:"category"`
+	Image_URL   string  `json:"image_url"`
 }

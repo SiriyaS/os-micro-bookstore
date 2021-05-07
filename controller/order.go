@@ -114,7 +114,7 @@ func (oc OrderController) GetOrderByOrderNo(c *gin.Context) {
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Error while getting books",
+			"message": "Error while getting order",
 		})
 		return
 	}

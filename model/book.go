@@ -205,6 +205,14 @@ func (bm BookModel) UpdateByID(isbn string, book form.BookRequest) (err error) {
 			return
 		}
 	}
+	if book.Image_URL != "" {
+		if err = conn.
+			Table("books").
+			Where("isbn = ?", isbn).
+			Update("image_url", book.Image_URL).Error; err != nil {
+			return
+		}
+	}
 
 	return nil
 }

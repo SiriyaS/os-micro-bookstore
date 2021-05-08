@@ -1,7 +1,7 @@
 database:
   user: root
   password: 12345678
-  host: 34.87.35.254
+  host: database
   port: 3306
   initdb: bookstore
 

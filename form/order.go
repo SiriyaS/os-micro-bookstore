@@ -2,17 +2,32 @@ package form
 
 import "time"
 
+type OrderReq struct {
+	Header  OrderHeaderReq `json:"header"`
+	Details []OrderDetail  `json:"details"`
+}
+
 type Order struct {
 	Header  OrderHeader   `json:"header"`
 	Details []OrderDetail `json:"details"`
 }
 
-type OrderHeader struct {
+type OrderHeaderReq struct {
 	OrderNo    string    `json:"order_no"`
 	User       uint64    `json:"user"`
 	OrderDate  time.Time `json:"order_date"`
 	GrandTotal float64   `json:"grand_total"`
 	Address    string    `json:"address"`
+}
+
+type OrderHeader struct {
+	OrderNo    string    `json:"order_no"`
+	Name       string    `json:"name"`
+	Email      string    `json:"email"`
+	Address    string    `json:"address"`
+	Telephone  string    `json:"telephone"`
+	OrderDate  time.Time `json:"order_date"`
+	GrandTotal float64   `json:"grand_total"`
 }
 
 type OrderDetail struct {

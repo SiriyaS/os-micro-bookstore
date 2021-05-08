@@ -7,7 +7,7 @@ import (
 
 type OrderModel struct{}
 
-func (om OrderModel) Add(order form.Order) (err error) {
+func (om OrderModel) Add(order form.OrderReq) (err error) {
 	// connect to database
 	conn, err := database.NewConnection()
 	if err != nil {
@@ -40,7 +40,9 @@ func (om OrderModel) ReadByOrderNo(orderNo string) (form.Order, error) {
 
 	var order form.Order
 	if err = conn.
-		Table("order_main").
+		Table("order_main om").
+		Select("om.order_no, u.name, u.email, u.telephone, om.address, om.order_date, om.grand_total").
+		Joins("INNER JOIN users u ON om.user = u.id").
 		Where("order_no = ?", orderNo).
 		Find(&order.Header).Error; err != nil {
 		return form.Order{}, err

@@ -22,7 +22,7 @@ func (oc OrderController) CreateOrder(c *gin.Context) {
 
 	orderModel := model.OrderModel{}
 
-	var request form.Order
+	var request form.OrderReq
 	err := c.BindJSON(&request)
 	if err != nil {
 		log.Println(err)

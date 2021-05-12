@@ -5,10 +5,14 @@ type User struct {
 	UserSubID string `json:"user_sub_id"`
 	FirstName string `json:"first_name"`
 	LastName  string `json:"last_name"`
-	Picture   string `json:"picture"`
 	Email     string `json:"email"`
-	ExpTime   string `json:"exp_time"`
-	IsLogin   bool   `json:"is_login"`
+}
+
+type UserRequest struct {
+	UserSubID string `json:"user_sub_id"`
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+	Email     string `json:"email"`
 }
 
 type UserInfo struct {
@@ -35,27 +39,22 @@ type UserLoginRequest struct {
 	Password string `json:"password"`
 }
 
-type VerifyTokenRequest struct {
-	ClientID string `json:"client_id"`
-	IDToken  string `json:"id_token"`
-}
-
-type GoogleClaim struct {
-	Iss           string `json:"iss"` // Issuer: accounts.google.com or https://accounts.google.com.
+type TokenClaim struct {
 	Sub           string `json:"sub"` // user ID
 	Azp           string `json:"azp"`
 	Aud           string `json:"aud"` // app's client ID
-	Iat           string `json:"iat"`
 	Exp           string `json:"exp"` // expiry time
 	Email         string `json:"email"`
 	EmailVerified string `json:"email_verified"`
+}
+
+type UserClaim struct {
+	ID            string `json:"id"`
+	Email         string `json:"email"`
+	VerifiedEmail bool   `json:"verified_email"`
 	Name          string `json:"name"`
 	Picture       string `json:"picture"`
 	GivenName     string `json:"given_name"`
 	FamilyName    string `json:"family_name"`
 	Locale        string `json:"locale"`
-}
-
-type SignOutRequest struct {
-	Sub string `json:"sub"`
 }

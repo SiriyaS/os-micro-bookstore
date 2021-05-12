@@ -42,8 +42,8 @@ func NewRouter() *gin.Engine {
 	router.POST("/makeOrder", orderController.CreateOrder)
 	router.GET("/getOrder", orderController.GetOrderByOrderNo)
 
-	// userController := controller.UserController{}
-	// router.POST("/verifyToken", userController.VerifyToken)
+	userController := controller.UserController{}
+	router.POST("/profile", userController.VerifyToken)
 	// router.POST("/register", userController.CreateUser)
 	// router.POST("/login", userController.Login)
 	// router.PUT("/editProfile", userController.EditProfileByEmail)

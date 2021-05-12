@@ -7,7 +7,7 @@ import (
 
 type UserModel struct{}
 
-func (um UserModel) Add(user form.UserInfoRequest) (err error) {
+func (um UserModel) Add(user form.UserRequest) (err error) {
 	// connect to database
 	conn, err := database.NewConnection()
 	if err != nil {
@@ -18,6 +18,24 @@ func (um UserModel) Add(user form.UserInfoRequest) (err error) {
 	if err = conn.
 		Table("users").
 		Create(&user).Error; err != nil {
+		return
+	}
+
+	return
+}
+
+func (um UserModel) ReadBySubID(subID string) (user form.User, err error) {
+	// connect to database
+	conn, err := database.NewConnection()
+	if err != nil {
+		return form.User{}, err
+	}
+	defer database.CloseConnection(conn)
+
+	if err = conn.
+		Table("users").
+		Where("user_sub_id = ?", subID).
+		Find(&user).Error; err != nil {
 		return
 	}
 
@@ -81,6 +99,24 @@ func (um UserModel) UpdateByEmail(email string, user form.UserInfoRequest) (err 
 			Update("username", user.Username).Error; err != nil {
 			return
 		}
+	}
+
+	return nil
+}
+
+func (um UserModel) UpdateIsLogin(subID string, status bool) (err error) {
+	// connect to database
+	conn, err := database.NewConnection()
+	if err != nil {
+		return err
+	}
+	defer database.CloseConnection(conn)
+
+	if err = conn.
+		Table("users").
+		Where("user_sub_id = ?", subID).
+		Update("is_login", !status).Error; err != nil {
+		return
 	}
 
 	return nil

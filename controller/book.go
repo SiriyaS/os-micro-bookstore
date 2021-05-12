@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
@@ -15,6 +16,9 @@ type BookController struct{}
 func (bc BookController) GetAllBooks(c *gin.Context) {
 	log.Println("[Book: GetAllBooks]")
 	bookModel := model.BookModel{}
+
+	bearerToken := c.Request.Header["Authorization"]
+	fmt.Println(bearerToken)
 
 	books, err := bookModel.ReadAll()
 	if err != nil {

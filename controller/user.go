@@ -1,6 +1,8 @@
 package controller
 
 import (
+	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 
@@ -13,6 +15,44 @@ import (
 )
 
 type UserController struct{}
+
+func (us UserController) VerifyToken(c *gin.Context) {
+	log.Println("[User: Verify Google id_token]")
+
+	// userModel := model.UserModel{}
+
+	var request form.VerifyTokenRequest
+	err := c.BindJSON(&request)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Error while binding to model.",
+		})
+		return
+	}
+
+	url := fmt.Sprintf("https://oauth2.googleapis.com/tokeninfo?id_token=%s", request.IDToken)
+
+	res, err := http.Get(url)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	defer res.Body.Close()
+
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	claims := form.GoogleClaim{}
+	// err = json.Unmarshal(body, &claims)
+	// if err != nil {
+	// 	log.Fatalln(err)
+	// }
+	log.Println("response: ", string(body))
+	log.Printf("struct: %#v", claims)
+}
 
 func (uc UserController) CreateUser(c *gin.Context) {
 	log.Println("[User: CreateUser]")

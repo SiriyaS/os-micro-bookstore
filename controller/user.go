@@ -23,19 +23,13 @@ func (uc UserController) VerifyTokenGitHub(c *gin.Context) {
 	userModel := model.UserModel{}
 
 	bearerToken := c.Request.Header["Authorization"]
+	fmt.Println(bearerToken)
 	tokenJoined := strings.Join(bearerToken, "")
 	token := strings.Split(tokenJoined, " ")
 
 	// --------------- request to GitHub API get Token Info ---------------------
 	clientID := os.Getenv("GitHub_Client_ID")
-
 	tokenUrl := fmt.Sprintf("https://api.github.com/applications/%s/token", clientID)
-
-	// resToken, err := http.Post(tokenUrl, "application/json", bytes.NewBuffer(reqBody))
-	// resToken.SetBasicAuth(username, passwd)
-	// if err != nil {
-	// 	log.Println(err)
-	// }
 
 	reqBody := fmt.Sprintf(`{"access_token": "%s"}`, token[1])
 
@@ -47,7 +41,7 @@ func (uc UserController) VerifyTokenGitHub(c *gin.Context) {
 	req.SetBasicAuth(username, passwd)
 	res, err := client.Do(req)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
 	defer res.Body.Close()

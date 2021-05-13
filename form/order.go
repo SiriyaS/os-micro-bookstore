@@ -22,10 +22,8 @@ type OrderHeaderReq struct {
 
 type OrderHeader struct {
 	OrderNo    string    `json:"order_no"`
-	Name       string    `json:"name"`
-	Email      string    `json:"email"`
+	Userame    string    `json:"username"`
 	Address    string    `json:"address"`
-	Telephone  string    `json:"telephone"`
 	OrderDate  time.Time `json:"order_date"`
 	GrandTotal float64   `json:"grand_total"`
 }

@@ -2,11 +2,15 @@ package controller
 
 import (
 	"crypto/rand"
+	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"reflect"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -22,6 +26,11 @@ func (oc OrderController) CreateOrder(c *gin.Context) {
 
 	orderModel := model.OrderModel{}
 
+	bearerToken := c.Request.Header["Authorization"]
+	fmt.Println(bearerToken)
+	tokenJoined := strings.Join(bearerToken, "")
+	token := strings.Split(tokenJoined, " ")
+
 	var request form.OrderReq
 	err := c.BindJSON(&request)
 	if err != nil {
@@ -31,6 +40,46 @@ func (oc OrderController) CreateOrder(c *gin.Context) {
 		})
 		return
 	}
+
+	// --------------- request to GitHub API get Token Info ---------------------
+	clientID := os.Getenv("GitHub_Client_ID")
+	tokenUrl := fmt.Sprintf("https://api.github.com/applications/%s/token", clientID)
+
+	reqBody := fmt.Sprintf(`{"access_token": "%s"}`, token[1])
+
+	username := clientID
+	passwd := os.Getenv("GitHub_Client_Secret")
+
+	client := &http.Client{}
+	req, err := http.NewRequest("POST", tokenUrl, strings.NewReader(reqBody))
+	req.SetBasicAuth(username, passwd)
+	res, err := client.Do(req)
+	if err != nil {
+		log.Println(err)
+	}
+
+	defer res.Body.Close()
+
+	if res.StatusCode != 200 {
+		log.Println("Invalid token")
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Invalid token.",
+		})
+		return
+	}
+	tokenBody, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		log.Println(err)
+	}
+
+	// map to struct
+	tokenClaims := form.GitHubClaim{}
+	err = json.Unmarshal(tokenBody, &tokenClaims)
+	if err != nil {
+		log.Println(err)
+	}
+	// log.Println("response: ", string(tokenBody))
+	// log.Printf("struct: %#v", tokenClaims)
 
 	var orderNo string
 	// generating orderNo
@@ -86,6 +135,7 @@ func (oc OrderController) CreateOrder(c *gin.Context) {
 	request.Header.OrderNo = orderNo
 	request.Header.OrderDate = time.Now()
 	request.Header.GrandTotal = grandTotal
+	request.Header.User = tokenClaims.User.ID
 
 	// fmt.Printf("%+v\n", request)
 

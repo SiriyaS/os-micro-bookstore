@@ -43,7 +43,7 @@ func NewRouter() *gin.Engine {
 	router.GET("/getOrder", orderController.GetOrderByOrderNo)
 
 	userController := controller.UserController{}
-	router.POST("/profile", userController.VerifyToken)
+	router.POST("/profile", userController.VerifyTokenGitHub)
 	// router.POST("/register", userController.CreateUser)
 	// router.POST("/login", userController.Login)
 	// router.PUT("/editProfile", userController.EditProfileByEmail)

@@ -6,9 +6,8 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"strconv"
+	"os"
 	"strings"
-	"time"
 
 	"github.com/gin-gonic/gin"
 
@@ -18,111 +17,64 @@ import (
 
 type UserController struct{}
 
-func (us UserController) VerifyToken(c *gin.Context) {
-	log.Println("[User: Verify Google id_token]")
-
-	clientID := "322525152965-hbqp3g534551bgrnapf5u7kmu4s07ved.apps.googleusercontent.com"
+func (uc UserController) VerifyTokenGitHub(c *gin.Context) {
+	log.Println("[User: Verify GitHub access_token]")
 
 	userModel := model.UserModel{}
 
 	bearerToken := c.Request.Header["Authorization"]
-	fmt.Println(bearerToken)
 	tokenJoined := strings.Join(bearerToken, "")
 	token := strings.Split(tokenJoined, " ")
 
-	// --------------- request to Google API get Token Info ---------------------
-	tokenUrl := fmt.Sprintf("https://oauth2.googleapis.com/tokeninfo?access_token=%s", token[1])
+	// --------------- request to GitHub API get Token Info ---------------------
+	clientID := os.Getenv("GitHub_Client_ID")
 
-	resToken, err := http.Get(tokenUrl)
+	tokenUrl := fmt.Sprintf("https://api.github.com/applications/%s/token", clientID)
+
+	// resToken, err := http.Post(tokenUrl, "application/json", bytes.NewBuffer(reqBody))
+	// resToken.SetBasicAuth(username, passwd)
+	// if err != nil {
+	// 	log.Println(err)
+	// }
+
+	reqBody := fmt.Sprintf(`{"access_token": "%s"}`, token[1])
+
+	username := clientID
+	passwd := os.Getenv("GitHub_Client_Secret")
+
+	client := &http.Client{}
+	req, err := http.NewRequest("POST", tokenUrl, strings.NewReader(reqBody))
+	req.SetBasicAuth(username, passwd)
+	res, err := client.Do(req)
 	if err != nil {
-		log.Println(err)
+		log.Fatal(err)
 	}
 
-	defer resToken.Body.Close()
+	defer res.Body.Close()
 
-	if resToken.StatusCode != 200 {
+	if res.StatusCode != 200 {
 		log.Println("Invalid token")
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Invalid token.",
 		})
 		return
 	}
-	tokenBody, err := ioutil.ReadAll(resToken.Body)
+	tokenBody, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		log.Println(err)
 	}
 
 	// map to struct
-	tokenClaims := form.TokenClaim{}
+	tokenClaims := form.GitHubClaim{}
 	err = json.Unmarshal(tokenBody, &tokenClaims)
 	if err != nil {
 		log.Println(err)
 	}
-	log.Println("response: ", string(tokenBody))
+	// log.Println("response: ", string(tokenBody))
 	// log.Printf("struct: %#v", tokenClaims)
 
-	// check ClientID
-	if tokenClaims.Aud != clientID {
-		log.Println("Client ID not match")
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Does not have access. Please check your Client ID.",
-		})
-		return
-	}
-
-	// check expiration time
-	expire, err := strconv.ParseInt(tokenClaims.Exp, 10, 64)
-	if err != nil {
-		log.Println(err)
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Does not have access. Please check your Client ID.",
-		})
-		return
-	}
-
-	// fmt.Println(time.Unix(expire, 0))
-	// fmt.Println((time.Now()).After(time.Unix(expire, 0)))
-	if (time.Now()).After(time.Unix(expire, 0)) {
-		log.Println("Access Token has expired")
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Does not have access. Access Token has expired.",
-		})
-		return
-	}
-
-	// ----------- request to Google API get User Info --------------
-	userUrl := fmt.Sprintf("https://www.googleapis.com/oauth2/v2/userinfo?access_token=%s", token[1])
-
-	resUser, err := http.Get(userUrl)
-	if err != nil {
-		log.Println(err)
-	}
-
-	defer resUser.Body.Close()
-
-	if resUser.StatusCode != 200 {
-		log.Println("Invalid token")
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Invalid token.",
-		})
-		return
-	}
-	userBody, err := ioutil.ReadAll(resUser.Body)
-	if err != nil {
-		log.Println(err)
-	}
-
-	// map to struct
-	userClaims := form.UserClaim{}
-	err = json.Unmarshal(userBody, &userClaims)
-	if err != nil {
-		log.Println(err)
-	}
-	log.Println("response: ", string(userBody))
-	// log.Printf("struct: %#v", userClaims)
-
 	// --------- check user exists - if does not exist create one in DB -------------
-	user, err := userModel.ReadBySubID(tokenClaims.Sub)
+	user, err := userModel.ReadByID(tokenClaims.User.ID)
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -133,11 +85,9 @@ func (us UserController) VerifyToken(c *gin.Context) {
 	if (user == form.User{}) {
 		log.Println("No user belong to this UserID. Creating user in database...")
 		// model create row
-		userRequest := form.UserRequest{
-			UserSubID: userClaims.ID,
-			FirstName: userClaims.GivenName,
-			LastName:  userClaims.FamilyName,
-			Email:     userClaims.Email,
+		userRequest := form.User{
+			ID:       tokenClaims.User.ID,
+			Username: tokenClaims.User.Login,
 		}
 
 		err = userModel.Add(userRequest)
@@ -152,7 +102,7 @@ func (us UserController) VerifyToken(c *gin.Context) {
 	}
 
 	// get user from Database
-	user, err = userModel.ReadBySubID(userClaims.ID)
+	user, err = userModel.ReadByID(tokenClaims.User.ID)
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -164,6 +114,153 @@ func (us UserController) VerifyToken(c *gin.Context) {
 	log.Println("Get user successfully.")
 	c.JSON(http.StatusOK, user)
 }
+
+// func (us UserController) VerifyTokenGoogle(c *gin.Context) {
+// 	log.Println("[User: Verify Google access_token]")
+
+// 	clientID := os.Getenv("Google_Client_ID")
+
+// 	userModel := model.UserModel{}
+
+// 	bearerToken := c.Request.Header["Authorization"]
+// 	fmt.Println(bearerToken)
+// 	tokenJoined := strings.Join(bearerToken, "")
+// 	token := strings.Split(tokenJoined, " ")
+
+// 	// --------------- request to Google API get Token Info ---------------------
+// 	tokenUrl := fmt.Sprintf("https://oauth2.googleapis.com/tokeninfo?access_token=%s", token[1])
+
+// 	resToken, err := http.Get(tokenUrl)
+// 	if err != nil {
+// 		log.Println(err)
+// 	}
+
+// 	defer resToken.Body.Close()
+
+// 	if resToken.StatusCode != 200 {
+// 		log.Println("Invalid token")
+// 		c.JSON(http.StatusBadRequest, gin.H{
+// 			"message": "Invalid token.",
+// 		})
+// 		return
+// 	}
+// 	tokenBody, err := ioutil.ReadAll(resToken.Body)
+// 	if err != nil {
+// 		log.Println(err)
+// 	}
+
+// 	// map to struct
+// 	tokenClaims := form.GoogleTokenClaim{}
+// 	err = json.Unmarshal(tokenBody, &tokenClaims)
+// 	if err != nil {
+// 		log.Println(err)
+// 	}
+// 	log.Println("response: ", string(tokenBody))
+// 	// log.Printf("struct: %#v", tokenClaims)
+
+// 	// check ClientID
+// 	if tokenClaims.Aud != clientID {
+// 		log.Println("Client ID not match")
+// 		c.JSON(http.StatusBadRequest, gin.H{
+// 			"message": "Does not have access. Please check your Client ID.",
+// 		})
+// 		return
+// 	}
+
+// 	// check expiration time
+// 	expire, err := strconv.ParseInt(tokenClaims.Exp, 10, 64)
+// 	if err != nil {
+// 		log.Println(err)
+// 		c.JSON(http.StatusBadRequest, gin.H{
+// 			"message": "Does not have access. Please check your Client ID.",
+// 		})
+// 		return
+// 	}
+
+// 	// fmt.Println(time.Unix(expire, 0))
+// 	// fmt.Println((time.Now()).After(time.Unix(expire, 0)))
+// 	if (time.Now()).After(time.Unix(expire, 0)) {
+// 		log.Println("Access Token has expired")
+// 		c.JSON(http.StatusBadRequest, gin.H{
+// 			"message": "Does not have access. Access Token has expired.",
+// 		})
+// 		return
+// 	}
+
+// 	// ----------- request to Google API get User Info --------------
+// 	userUrl := fmt.Sprintf("https://www.googleapis.com/oauth2/v2/userinfo?access_token=%s", token[1])
+
+// 	resUser, err := http.Get(userUrl)
+// 	if err != nil {
+// 		log.Println(err)
+// 	}
+
+// 	defer resUser.Body.Close()
+
+// 	if resUser.StatusCode != 200 {
+// 		log.Println("Invalid token")
+// 		c.JSON(http.StatusBadRequest, gin.H{
+// 			"message": "Invalid token.",
+// 		})
+// 		return
+// 	}
+// 	userBody, err := ioutil.ReadAll(resUser.Body)
+// 	if err != nil {
+// 		log.Println(err)
+// 	}
+
+// 	// map to struct
+// 	userClaims := form.GoogleUserClaim{}
+// 	err = json.Unmarshal(userBody, &userClaims)
+// 	if err != nil {
+// 		log.Println(err)
+// 	}
+// 	log.Println("response: ", string(userBody))
+// 	// log.Printf("struct: %#v", userClaims)
+
+// 	// --------- check user exists - if does not exist create one in DB -------------
+// 	user, err := userModel.ReadBySubID(tokenClaims.Sub)
+// 	if err != nil {
+// 		log.Println(err)
+// 		c.JSON(http.StatusInternalServerError, gin.H{
+// 			"message": "Error while getting user",
+// 		})
+// 		return
+// 	}
+// 	if (user == form.User{}) {
+// 		log.Println("No user belong to this UserID. Creating user in database...")
+// 		// model create row
+// 		userRequest := form.UserRequest{
+// 			UserSubID: userClaims.ID,
+// 			FirstName: userClaims.GivenName,
+// 			LastName:  userClaims.FamilyName,
+// 			Email:     userClaims.Email,
+// 		}
+
+// 		err = userModel.Add(userRequest)
+// 		if err != nil {
+// 			log.Println(err)
+// 			c.JSON(http.StatusInternalServerError, gin.H{
+// 				"message": "Error while creating user",
+// 			})
+// 			return
+// 		}
+// 		log.Println("Create user successfully.")
+// 	}
+
+// 	// get user from Database
+// 	user, err = userModel.ReadBySubID(userClaims.ID)
+// 	if err != nil {
+// 		log.Println(err)
+// 		c.JSON(http.StatusInternalServerError, gin.H{
+// 			"message": "Error while getting user.",
+// 		})
+// 		return
+// 	}
+
+// 	log.Println("Get user successfully.")
+// 	c.JSON(http.StatusOK, user)
+// }
 
 // func (uc UserController) GetUserInfo(c *gin.Context) {
 // 	log.Println("[User: GetUserInfo]")

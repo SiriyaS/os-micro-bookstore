@@ -7,7 +7,7 @@ import (
 
 type UserModel struct{}
 
-func (um UserModel) Add(user form.UserRequest) (err error) {
+func (um UserModel) Add(user form.User) (err error) {
 	// connect to database
 	conn, err := database.NewConnection()
 	if err != nil {
@@ -24,7 +24,7 @@ func (um UserModel) Add(user form.UserRequest) (err error) {
 	return
 }
 
-func (um UserModel) ReadBySubID(subID string) (user form.User, err error) {
+func (um UserModel) ReadByID(id uint64) (user form.User, err error) {
 	// connect to database
 	conn, err := database.NewConnection()
 	if err != nil {
@@ -34,7 +34,7 @@ func (um UserModel) ReadBySubID(subID string) (user form.User, err error) {
 
 	if err = conn.
 		Table("users").
-		Where("user_sub_id = ?", subID).
+		Where("id = ?", id).
 		Find(&user).Error; err != nil {
 		return
 	}
